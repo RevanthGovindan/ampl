@@ -1,0 +1,19 @@
+http:
+  writeTimeout: 15
+  readTimeout: 15
+
+log:
+  dir: logs
+  file: tasks.log
+  level: INFO
+
+db:
+  host: localhost
+  port: 5432
+  user: root
+  password: root
+  database: TASKS
+  maxIdle: 5
+  maxOpen: 10
+  driver: postgres
+  endPoint: NXTOPTION-DB
