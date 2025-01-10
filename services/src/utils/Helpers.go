@@ -14,7 +14,6 @@ import (
 )
 
 func IsRelease() bool {
-	fmt.Println(config.Config.Env)
 	return strings.EqualFold(config.Config.Env, PROD)
 }
 
@@ -37,6 +36,20 @@ func LoadPrivateKey(path string) (*rsa.PrivateKey, error) {
 	return ref, nil
 }
 
+func LoadPublicKey(keyPath string) (*rsa.PublicKey, error) {
+	var err error = nil
+	var pemKey []byte
+	pemKey, err = os.ReadFile(keyPath)
+	if err != nil {
+		return nil, err
+	}
+	ref, err := jwt.ParseRSAPublicKeyFromPEM(pemKey)
+	if err != nil {
+		return ref, err
+	}
+	return ref, nil
+}
+
 func JwtEncode(name string, exp int64, key *rsa.PrivateKey) (string, error) {
 	currTime := time.Now().UnixMilli()
 	claims := jwt.MapClaims{
@@ -50,4 +63,23 @@ func JwtEncode(name string, exp int64, key *rsa.PrivateKey) (string, error) {
 		return "", err
 	}
 	return tokenString, nil
+}
+
+func JwtDecrypt(encryptedToken string, publicKey *rsa.PublicKey) (jwt.MapClaims, error) {
+	decryptedToken, err := jwt.Parse(encryptedToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return publicKey, nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+	claims, ok := decryptedToken.Claims.(jwt.MapClaims)
+	if !ok || !decryptedToken.Valid {
+		return nil, errors.New("invalid encryption")
+	}
+
+	return claims, nil
 }

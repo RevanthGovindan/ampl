@@ -40,6 +40,7 @@ func login(c *gin.Context) {
 		data, _ := json.Marshal(response)
 		dao.RedisConn.SetToken(token, string(data), exp)
 		c.JSON(http.StatusOK, response)
+		return
 	}
 	c.JSON(http.StatusUnauthorized, models.ErrResponse{Error: "Invalid credentials"})
 }

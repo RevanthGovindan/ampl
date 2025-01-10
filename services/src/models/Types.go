@@ -52,5 +52,6 @@ type Config struct {
 		UserName string `yaml:"username"`
 		Password string `yaml:"password"`
 	} `yaml:"credentials"`
-	PvtKeyPath string `yaml:"path"`
+	PvtKeyPath string `yaml:"private-key-path"`
+	PubKeyPath string `yaml:"public-key-path"`
 }

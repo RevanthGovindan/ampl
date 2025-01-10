@@ -41,6 +41,8 @@ definitions:
         type: string
       token:
         type: string
+      type:
+        type: string
     type: object
   models.MsgResponse:
     properties:
@@ -148,6 +150,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/models.MsgResponse'
+      security:
+      - http_bearer: []
       summary: Delete task
       tags:
       - Tasks
@@ -169,6 +173,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dao.Tasks'
+      security:
+      - http_bearer: []
       summary: Get Task
       tags:
       - Tasks

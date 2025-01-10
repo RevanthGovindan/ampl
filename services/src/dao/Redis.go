@@ -36,6 +36,14 @@ func (f *RedisPool) Init(redisConfig models.RedisConfig) error {
 	return nil
 }
 
-func (f *RedisPool) SetToken(token string, data string, exp time.Duration) {
-	f.redisClient.Set(f.redisClient.Context(), token, data, exp)
+func (f *RedisPool) SetToken(token string, data string, exp time.Duration) error {
+	var cmd = f.redisClient.Set(f.redisClient.Context(), token, data, exp)
+	_, err := cmd.Result()
+	return err
+}
+
+func (f *RedisPool) GetTokenData(token string) (string, error) {
+	var cmd = f.redisClient.Get(f.redisClient.Context(), token)
+	data, err := cmd.Result()
+	return data, err
 }

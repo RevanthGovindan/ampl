@@ -8,4 +8,5 @@ import (
 var (
 	Config          models.Config = models.Config{}
 	CloudPrivateKey *rsa.PrivateKey
+	CloudPublicKey  *rsa.PublicKey
 )

@@ -3,7 +3,6 @@ package controllers
 import (
 	"ampl/src/dao"
 	"ampl/src/models"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -18,10 +17,10 @@ import (
 // @Success		200  {object} dao.Tasks
 // @Produce     json
 // @Param       id path string true "Id of the task"
+// @Security 	http_bearer
 // @Router      /tasks/{id} [get]
 func getTaskById(c *gin.Context) {
 	id := c.Param("id")
-	fmt.Println(id)
 	var result dao.Tasks
 	err := dao.DbConn.GetTaskById(id, &result)
 	if err != nil {
@@ -97,6 +96,7 @@ func updateTaskById(c *gin.Context) {
 // @Success		200  {object} models.MsgResponse
 // @Produce     json
 // @Param       id path string true "Id of the task"
+// @Security 	http_bearer
 // @Router      /tasks/{id} [delete]
 func deleteTaskById(c *gin.Context) {
 	var id = c.Param("id")

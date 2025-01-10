@@ -5,7 +5,6 @@ import (
 	"ampl/src/controllers"
 	"ampl/src/dao"
 	"ampl/src/utils"
-	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -47,10 +46,12 @@ func main() {
 	//load keys
 	config.CloudPrivateKey, err = utils.LoadPrivateKey(config.Config.PvtKeyPath)
 	if err != nil {
-		fmt.Println(err)
 		os.Exit(1)
 	}
 
+	config.CloudPublicKey, err = utils.LoadPublicKey(config.Config.PubKeyPath)
+	if err != nil {
+		os.Exit(1)
+	}
 	engine.Run(":8000")
-	fmt.Println(err)
 }

@@ -83,6 +83,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/models.MsgResponse"
+      security:
+        - http_bearer: []
       summary: Delete task
       tags:
         - Tasks
@@ -103,6 +105,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/dao.Tasks"
+      security:
+        - http_bearer: []
       summary: Get Task
       tags:
         - Tasks
@@ -189,6 +193,8 @@ components:
         name:
           type: string
         token:
+          type: string
+        type:
           type: string
       type: object
     models.MsgResponse:
