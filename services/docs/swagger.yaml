@@ -1,0 +1,87 @@
+basePath: /
+definitions:
+  models.CreateTask:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  orm.Tasks:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: Module to manage tasks
+  title: Tasks Services
+  version: "1.0"
+paths:
+  /public/tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get all the tasks
+      operationId: get-task
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/orm.Tasks'
+            type: array
+      security:
+      - http_bearer: []
+      summary: Get All Task
+      tags:
+      - Tasks
+  /tasks:
+    post:
+      consumes:
+      - application/json
+      description: Create a new task
+      operationId: create-task
+      parameters:
+      - description: Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTask'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/orm.Tasks'
+      security:
+      - http_bearer: []
+      summary: Create
+      tags:
+      - Tasks
+schemes:
+- http
+securityDefinitions:
+  http_bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
+tags:
+- description: Tasks services
+  name: Tasks

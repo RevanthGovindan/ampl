@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  contact: {}
+  description: Module to manage tasks
+  title: Tasks Services
+  version: "1.0"
+paths:
+  /public/tasks:
+    get:
+      description: Get all the tasks
+      operationId: get-task
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/orm.Tasks"
+                type: array
+      security:
+        - http_bearer: []
+      summary: Get All Task
+      tags:
+        - Tasks
+  /tasks:
+    post:
+      description: Create a new task
+      operationId: create-task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/models.CreateTask"
+        description: Task data
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/orm.Tasks"
+      security:
+        - http_bearer: []
+      summary: Create
+      tags:
+        - Tasks
+tags:
+  - description: Tasks services
+    name: Tasks
+servers:
+  - url: http://localhost:8000
+components:
+  securitySchemes:
+    http_bearer:
+      in: header
+      name: Authorization
+      type: apiKey
+  schemas:
+    models.CreateTask:
+      properties:
+        description:
+          type: string
+        title:
+          type: string
+      type: object
+    orm.Tasks:
+      properties:
+        createdAt:
+          type: string
+        description:
+          type: string
+        id:
+          type: integer
+        status:
+          type: string
+        title:
+          type: string
+        updatedAt:
+          type: string
+      type: object

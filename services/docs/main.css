@@ -1,0 +1,104 @@
+html{
+    width: 100%;
+    height: 100%;
+}
+
+body{
+    width: 100%;
+    height: 100%;
+    margin: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.dot-pulse {
+    position: relative;
+    left: -9999px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #4b4b4b;
+    color: #4b4b4b;
+    box-shadow: 9999px 0 0 -5px #4b4b4b;
+    animation: dotPulse 1.5s infinite linear;
+    animation-delay: .25s;
+  }
+  
+  .dot-pulse::before, .dot-pulse::after {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: #4b4b4b;
+    color: #4b4b4b;
+  }
+  
+  .dot-pulse::before {
+    box-shadow: 9984px 0 0 -5px #4b4b4b;
+    animation: dotPulseBefore 1.5s infinite linear;
+    animation-delay: 0s;
+  }
+  
+  .dot-pulse::after {
+    box-shadow: 10014px 0 0 -5px #4b4b4b;
+    animation: dotPulseAfter 1.5s infinite linear;
+    animation-delay: .5s;
+  }
+  
+  @keyframes dotPulseBefore {
+    0% {
+      box-shadow: 9984px 0 0 -5px #4b4b4b;
+    }
+    30% {
+      box-shadow: 9984px 0 0 2px #4b4b4b;
+    }
+    60%,
+    100% {
+      box-shadow: 9984px 0 0 -5px #4b4b4b;
+    }
+  }
+  
+  @keyframes dotPulse {
+    0% {
+      box-shadow: 9999px 0 0 -5px #4b4b4b;
+    }
+    30% {
+      box-shadow: 9999px 0 0 2px #4b4b4b;
+    }
+    60%,
+    100% {
+      box-shadow: 9999px 0 0 -5px #4b4b4b;
+    }
+  }
+  
+  @keyframes dotPulseAfter {
+    0% {
+      box-shadow: 10014px 0 0 -5px #4b4b4b;
+    }
+    30% {
+      box-shadow: 10014px 0 0 2px #4b4b4b;
+    }
+    60%,
+    100% {
+      box-shadow: 10014px 0 0 -5px #4b4b4b;
+    }
+  }
+  
+
+rapi-doc {
+    width: 100%;
+}
+
+.header-section {
+  display: flex;
+  width: 100%;
+  height: 60px;
+  align-items: center;
+}
+
+.header-section > span {
+  font-size: 22px;
+}

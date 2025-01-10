@@ -1,7 +1,7 @@
 package orm
 
 import (
-	"ampl/src/cache"
+	"ampl/src/config"
 	"fmt"
 	"strings"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func createDatabase() error {
-	var taskDb = cache.Config.Db
+	var taskDb = config.Config.Db
 	dsn := fmt.Sprintf("host=%s user=%s password=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
 		taskDb.Host, taskDb.User, taskDb.Password, taskDb.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -35,28 +35,28 @@ func createDatabase() error {
 	return nil
 }
 
-func AutoMigration() error {
-	var taskDb = cache.Config.Db
+func autoMigration() (*gorm.DB, error) {
+	var taskDb = config.Config.Db
 	dsn := fmt.Sprintf("host=%s user=%s password=%s database=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
 		taskDb.Host, taskDb.User, taskDb.Password, strings.ToLower(taskDb.Database), taskDb.Port)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	db.AutoMigrate(&Tasks{})
-	return nil
+	return db, nil
 }
 
-func Migrate() error {
+func InitializeDb() (*gorm.DB, error) {
 	var err error
 	err = createDatabase()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = AutoMigration()
+	db, err := autoMigration()
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return err
+	return db, nil
 }

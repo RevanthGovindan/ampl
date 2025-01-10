@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"ampl/src/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,14 +11,23 @@ type Router struct{}
 
 func (Router) SetupRoutes() *gin.Engine {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "pong")
-	})
 
-	// authorized := r.Group("/", gin.BasicAuth(gin.Accounts{
-	// 	"foo":  "bar", // user:foo password:bar
-	// 	"manu": "123", // user:manu password:123
-	// }))
+	if !utils.IsRelease() {
+		r.StaticFS("/docs", http.Dir("./docs"))
+	}
+	public := r.Group("/public")
+	{
+		public.GET("/tasks", getAllTasks)
+	}
+
+	authorized := r.Group("/")
+
+	{
+		authorized.GET("/tasks/{id}", getTaskById)
+		authorized.POST("/tasks", createTask)
+		authorized.PUT("/tasks/{id}", updateTaskById)
+		authorized.DELETE("/tasks/{id}", deleteTaskById)
+	}
 
 	return r
 }

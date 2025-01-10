@@ -1,3 +1,4 @@
+env: local
 http:
   writeTimeout: 15
   readTimeout: 15
