@@ -3,6 +3,12 @@ http:
   writeTimeout: 15
   readTimeout: 15
 
+credentials:
+  username: ampl
+  password: ampl
+
+path: keys/private.pem
+
 log:
   dir: logs
   file: tasks.log

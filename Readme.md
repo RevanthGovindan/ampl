@@ -8,3 +8,8 @@ https://objects.githubusercontent.com/github-production-release-asset-2e65be/939
 
 
 swag init -g src/main.go --output docs --outputTypes yaml && npx swagger2openapi -o docs/service-spec.yaml docs/swagger.yaml && go run src/*.go -config config.yaml 
+
+
+openssl genrsa -out keys/private.pem 2048
+
+openssl rsa -pubout -in keys/private.pem -out keys/public.pem

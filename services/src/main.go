@@ -43,6 +43,14 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+
+	//load keys
+	config.CloudPrivateKey, err = utils.LoadPrivateKey(config.Config.PvtKeyPath)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	engine.Run(":8000")
 	fmt.Println(err)
 }

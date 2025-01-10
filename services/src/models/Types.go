@@ -45,7 +45,12 @@ type Config struct {
 		WriteTimeout int `yaml:"writeTimeout"`
 		ReadTimeout  int `yaml:"readTimeout"`
 	}
-	Log   LogInfo     `yaml:"log"`
-	Db    DBConfig    `yaml:"db"`
-	Redis RedisConfig `yaml:"redis"`
+	Log         LogInfo     `yaml:"log"`
+	Db          DBConfig    `yaml:"db"`
+	Redis       RedisConfig `yaml:"redis"`
+	Credentials struct {
+		UserName string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"credentials"`
+	PvtKeyPath string `yaml:"path"`
 }

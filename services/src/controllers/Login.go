@@ -1,8 +1,14 @@
 package controllers
 
 import (
+	"ampl/src/config"
+	"ampl/src/dao"
 	"ampl/src/models"
+	"ampl/src/utils"
+	"encoding/json"
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,9 +29,17 @@ func login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
-	var response models.LoginResponse = models.LoginResponse{
-		Name:  req.Name,
-		Token: "111111111111111111111",
+	if strings.EqualFold(config.Config.Credentials.UserName, req.Name) &&
+		strings.EqualFold(config.Config.Credentials.Password, req.Password) {
+		var currTime = time.Now()
+		var exp = time.Duration(1) * time.Hour
+		token, _ := utils.JwtEncode(req.Name, currTime.Add(exp).UnixMilli(), config.CloudPrivateKey)
+		var response models.LoginResponse = models.LoginResponse{
+			Name: req.Name, Type: utils.TOKEN_TYPE, Token: token,
+		}
+		data, _ := json.Marshal(response)
+		dao.RedisConn.SetToken(token, string(data), exp)
+		c.JSON(http.StatusOK, response)
 	}
-	c.JSON(http.StatusBadRequest, response)
+	c.JSON(http.StatusUnauthorized, models.ErrResponse{Error: "Invalid credentials"})
 }

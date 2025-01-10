@@ -11,4 +11,5 @@ type MsgResponse struct {
 type LoginResponse struct {
 	Name  string `json:"name"`
 	Token string `json:"token"`
+	Type  string `json:"type"`
 }
