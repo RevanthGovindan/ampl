@@ -7,6 +7,20 @@ definitions:
       title:
         type: string
     type: object
+  models.MsgResponse:
+    properties:
+      msg:
+        type: string
+    type: object
+  models.UpdateTask:
+    properties:
+      description:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
   orm.Tasks:
     properties:
       createdAt:
@@ -75,6 +89,27 @@ paths:
       tags:
       - Tasks
   /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete task by id
+      operationId: delete-task
+      parameters:
+      - description: Id of the task
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MsgResponse'
+      summary: Delete task
+      tags:
+      - Tasks
     get:
       consumes:
       - application/json
@@ -94,6 +129,35 @@ paths:
           schema:
             $ref: '#/definitions/orm.Tasks'
       summary: Get Task
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: update existing task
+      operationId: update-task
+      parameters:
+      - description: Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTask'
+      - description: Id of the task
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/orm.Tasks'
+      security:
+      - http_bearer: []
+      summary: Update Task
       tags:
       - Tasks
 schemes:

@@ -34,3 +34,25 @@ func GetTaskById(id string, t *Tasks) (err error) {
 	}
 	return nil
 }
+
+func UpdateTaskById(t Tasks) (err error) {
+	find := config.DbConn.Model(&t).Updates(Tasks{Title: t.Title, Description: t.Description, Status: t.Status})
+	if find.Error != nil {
+		return err
+	}
+	if find.RowsAffected == 0 {
+		return errors.New("invalid id or no changes")
+	}
+	return nil
+}
+
+func DeleteTaskById(id string) (err error) {
+	find := config.DbConn.Delete(&Tasks{}, id)
+	if find.Error != nil {
+		return err
+	}
+	if find.RowsAffected == 0 {
+		return errors.New("invalid id")
+	}
+	return nil
+}
