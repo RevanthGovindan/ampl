@@ -54,6 +54,7 @@ func createTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
+	c.JSON(http.StatusCreated, models.MsgResponse{Msg: "Created"})
 }
 
 // @Summary		Update Task

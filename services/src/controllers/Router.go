@@ -5,6 +5,10 @@ import (
 	"ampl/src/dao"
 	"ampl/src/models"
 	"ampl/src/utils"
+	"bytes"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -13,6 +17,36 @@ import (
 )
 
 type Router struct{}
+
+func (f *Router) RequestLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		startTime := time.Now()
+		bodyBytes, err := ioutil.ReadAll(c.Request.Body)
+		if err != nil {
+			log.Printf("Failed to read request body: %v", err)
+		}
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+		latency := time.Since(startTime)
+		log.Printf("%s %s %d %s %s\n",
+			c.Request.URL.Path,
+			c.Request.Method,
+			c.Writer.Status(),
+			latency, string(bodyBytes),
+		)
+		c.Next()
+	}
+}
+
+func (f *Router) ResponseLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		log.Printf("%s %s %d\n",
+			c.Request.RequestURI,
+			c.Request.Method,
+			c.Writer.Status(),
+		)
+		c.Next()
+	}
+}
 
 func (f *Router) Authorized() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -49,7 +83,8 @@ func (f *Router) Authorized() gin.HandlerFunc {
 
 func (f *Router) SetupRoutes() *gin.Engine {
 	r := gin.Default()
-
+	r.Use(f.RequestLogger())
+	r.Use(f.ResponseLogger())
 	if !utils.IsRelease() {
 		r.StaticFS("/docs", http.Dir("./docs"))
 	}

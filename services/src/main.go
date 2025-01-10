@@ -53,5 +53,7 @@ func main() {
 	if err != nil {
 		os.Exit(1)
 	}
+	utils.InitLogging(config.Config.Log)
+
 	engine.Run(":8000")
 }

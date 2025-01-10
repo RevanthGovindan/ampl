@@ -1,0 +1,5 @@
+2025/01/11 00:11:33 POST /public/login 200 20.575µs {
+  "name": "ampl",
+  "password": "ampl"
+}
+2025/01/11 00:11:33 200 POST /public/login
