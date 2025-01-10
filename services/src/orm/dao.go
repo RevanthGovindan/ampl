@@ -22,3 +22,15 @@ func SaveTask(t *Tasks) (err error) {
 	}
 	return nil
 }
+
+func GetTaskById(id string, t *Tasks) (err error) {
+	var count int64
+	find := config.DbConn.Find(t, id).Count(&count)
+	if find.Error != nil {
+		return err
+	}
+	if count == 0 {
+		return errors.New("no data")
+	}
+	return nil
+}

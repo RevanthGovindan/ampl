@@ -46,6 +46,27 @@ paths:
       summary: Create
       tags:
         - Tasks
+  "/tasks/{id}":
+    get:
+      description: Get a specific task by id
+      operationId: get-task-id
+      parameters:
+        - description: Id of the task
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/orm.Tasks"
+      summary: Get Task
+      tags:
+        - Tasks
 tags:
   - description: Tasks services
     name: Tasks

@@ -23,10 +23,10 @@ func (Router) SetupRoutes() *gin.Engine {
 	authorized := r.Group("/")
 
 	{
-		authorized.GET("/tasks/{id}", getTaskById)
+		authorized.GET("/tasks/:id", getTaskById)
 		authorized.POST("/tasks", createTask)
-		authorized.PUT("/tasks/{id}", updateTaskById)
-		authorized.DELETE("/tasks/{id}", deleteTaskById)
+		authorized.PUT("/tasks/:id", updateTaskById)
+		authorized.DELETE("/tasks/:id", deleteTaskById)
 	}
 
 	return r
