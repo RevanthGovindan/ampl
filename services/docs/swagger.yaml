@@ -1,10 +1,45 @@
 basePath: /
 definitions:
+  dao.Tasks:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   models.CreateTask:
     properties:
       description:
         type: string
       title:
+        type: string
+    type: object
+  models.LoginRequest:
+    properties:
+      name:
+        description: |-
+          required: true
+          example: ampl
+        type: string
+      password:
+        description: |-
+          required: true
+          example: ampl
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      name:
+        type: string
+      token:
         type: string
     type: object
   models.MsgResponse:
@@ -21,21 +56,6 @@ definitions:
       title:
         type: string
     type: object
-  orm.Tasks:
-    properties:
-      createdAt:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      status:
-        type: string
-      title:
-        type: string
-      updatedAt:
-        type: string
-    type: object
 host: localhost:8000
 info:
   contact: {}
@@ -43,6 +63,29 @@ info:
   title: Tasks Services
   version: "1.0"
 paths:
+  /public/login:
+    post:
+      consumes:
+      - application/json
+      description: Login with name and password
+      operationId: login
+      parameters:
+      - description: Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+      summary: Login
+      tags:
+      - Login
   /public/tasks:
     get:
       consumes:
@@ -56,10 +99,8 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/orm.Tasks'
+              $ref: '#/definitions/dao.Tasks'
             type: array
-      security:
-      - http_bearer: []
       summary: Get All Task
       tags:
       - Tasks
@@ -82,7 +123,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/orm.Tasks'
+            $ref: '#/definitions/dao.Tasks'
       security:
       - http_bearer: []
       summary: Create
@@ -127,7 +168,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/orm.Tasks'
+            $ref: '#/definitions/dao.Tasks'
       summary: Get Task
       tags:
       - Tasks
@@ -154,7 +195,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/orm.Tasks'
+            $ref: '#/definitions/dao.Tasks'
       security:
       - http_bearer: []
       summary: Update Task
@@ -171,3 +212,5 @@ swagger: "2.0"
 tags:
 - description: Tasks services
   name: Tasks
+- description: Login services
+  name: Login

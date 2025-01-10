@@ -1,4 +1,4 @@
-package orm
+package dao
 
 import (
 	"ampl/src/config"
@@ -8,6 +8,19 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+func InitializeDb() (*gorm.DB, error) {
+	var err error
+	err = createDatabase()
+	if err != nil {
+		return nil, err
+	}
+	db, err := autoMigration()
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
+}
 
 func createDatabase() error {
 	var taskDb = config.Config.Db
@@ -45,18 +58,5 @@ func autoMigration() (*gorm.DB, error) {
 	}
 
 	db.AutoMigrate(&Tasks{})
-	return db, nil
-}
-
-func InitializeDb() (*gorm.DB, error) {
-	var err error
-	err = createDatabase()
-	if err != nil {
-		return nil, err
-	}
-	db, err := autoMigration()
-	if err != nil {
-		return nil, err
-	}
 	return db, nil
 }

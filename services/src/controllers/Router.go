@@ -18,6 +18,7 @@ func (Router) SetupRoutes() *gin.Engine {
 	public := r.Group("/public")
 	{
 		public.GET("/tasks", getAllTasks)
+		public.POST("/login", login)
 	}
 
 	authorized := r.Group("/")

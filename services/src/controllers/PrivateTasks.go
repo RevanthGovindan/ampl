@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"ampl/src/dao"
 	"ampl/src/models"
-	"ampl/src/orm"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -15,15 +15,15 @@ import (
 // @Tags        Tasks
 // @Id 			get-task-id
 // @Accept      json
-// @Success		200  {object} orm.Tasks
+// @Success		200  {object} dao.Tasks
 // @Produce     json
 // @Param       id path string true "Id of the task"
 // @Router      /tasks/{id} [get]
 func getTaskById(c *gin.Context) {
 	id := c.Param("id")
 	fmt.Println(id)
-	var result orm.Tasks
-	err := orm.GetTaskById(id, &result)
+	var result dao.Tasks
+	err := dao.DbConn.GetTaskById(id, &result)
 	if err != nil {
 		c.JSON(http.StatusOK, models.ErrResponse{Error: err.Error()})
 		return
@@ -36,7 +36,7 @@ func getTaskById(c *gin.Context) {
 // @Tags        Tasks
 // @Id 			create-task
 // @Accept      json
-// @Success		200  {object} orm.Tasks
+// @Success		200  {object} dao.Tasks
 // @Produce     json
 // @Param request body models.CreateTask true "Task data"
 // @Security 	http_bearer
@@ -48,9 +48,9 @@ func createTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
-	var task orm.Tasks = orm.Tasks{Title: req.Title, Description: req.Description}
+	var task dao.Tasks = dao.Tasks{Title: req.Title, Description: req.Description}
 	task.Status = "pending"
-	err = orm.SaveTask(&task)
+	err = dao.DbConn.SaveTask(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
@@ -62,7 +62,7 @@ func createTask(c *gin.Context) {
 // @Tags        Tasks
 // @Id 			update-task
 // @Accept      json
-// @Success		200  {object} orm.Tasks
+// @Success		200  {object} dao.Tasks
 // @Produce     json
 // @Param request body models.UpdateTask true "Task data"
 // @Param       id path string true "Id of the task"
@@ -81,8 +81,8 @@ func updateTaskById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
-	var task orm.Tasks = orm.Tasks{Title: req.Title, Description: req.Description, ID: uint64(intId), Status: req.Status}
-	err = orm.UpdateTaskById(task)
+	var task dao.Tasks = dao.Tasks{Title: req.Title, Description: req.Description, ID: uint64(intId), Status: req.Status}
+	err = dao.DbConn.UpdateTaskById(task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
@@ -100,7 +100,7 @@ func updateTaskById(c *gin.Context) {
 // @Router      /tasks/{id} [delete]
 func deleteTaskById(c *gin.Context) {
 	var id = c.Param("id")
-	err := orm.DeleteTaskById(id)
+	err := dao.DbConn.DeleteTaskById(id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return

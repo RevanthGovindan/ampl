@@ -1,4 +1,4 @@
-package orm
+package dao
 
 import "time"
 

@@ -27,12 +27,25 @@ type DBConfig struct {
 	EndPoint string `yaml:"endPoint"`
 }
 
+type RedisConfig struct {
+	Host         string `yaml:"host"`
+	Port         string `yaml:"port"`
+	Password     string `yaml:"password"`
+	Database     int    `yaml:"database"`
+	DialTimeout  int    `yaml:"dialTimeout"`
+	ReadTimeout  int    `yaml:"readTimeout"`
+	WriteTimeout int    `yaml:"writeTimeout"`
+	PoolSize     int    `yaml:"poolSize"`
+	EndPoint     string `yaml:"endpoint"`
+}
+
 type Config struct {
 	Env  string `yaml:"env"`
 	Http struct {
 		WriteTimeout int `yaml:"writeTimeout"`
 		ReadTimeout  int `yaml:"readTimeout"`
 	}
-	Log LogInfo  `yaml:"log"`
-	Db  DBConfig `yaml:"db"`
+	Log   LogInfo     `yaml:"log"`
+	Db    DBConfig    `yaml:"db"`
+	Redis RedisConfig `yaml:"redis"`
 }

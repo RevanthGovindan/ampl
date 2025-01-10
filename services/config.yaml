@@ -18,3 +18,13 @@ db:
   maxOpen: 10
   driver: postgres
   endPoint: NXTOPTION-DB
+
+redis:
+  host: localhost
+  port: 6379
+  password:
+  database: 0
+  dialTimeout: 2000
+  readTimeout: 1000
+  writeTimeout: 1000
+  poolSize: 10

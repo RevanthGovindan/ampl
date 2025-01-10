@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"ampl/src/orm"
+	"ampl/src/dao"
 	"fmt"
 	"net/http"
 
@@ -13,13 +13,12 @@ import (
 // @Tags        Tasks
 // @Id 			get-task
 // @Accept      json
-// @Success		200  {object} []orm.Tasks
+// @Success		200  {object} []dao.Tasks
 // @Produce     json
-// @Security 	http_bearer
 // @Router      /public/tasks [get]
 func getAllTasks(c *gin.Context) {
-	var results []orm.Tasks = make([]orm.Tasks, 0)
-	err := orm.GetAllTasks(&results)
+	var results []dao.Tasks = make([]dao.Tasks, 0)
+	err := dao.DbConn.GetAllTasks(&results)
 	fmt.Println(err, results)
 	c.JSON(http.StatusOK, results)
 }
