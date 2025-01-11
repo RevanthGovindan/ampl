@@ -17,3 +17,14 @@ services:
     container_name: redis-container
     ports:
       - "6379:6379"
+
+  service:
+    build: services/
+    container_name: service
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./logs:/root/logs
+    environment:
+      - TZ=Asia/Kolkata

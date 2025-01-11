@@ -5,7 +5,6 @@ import (
 	"ampl/src/controllers"
 	"ampl/src/dao"
 	"ampl/src/utils"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,7 +26,7 @@ func main() {
 	var err error
 	err = utils.InitializeConfigs(&config.Config)
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 	if utils.IsRelease() {
 		gin.SetMode(gin.ReleaseMode)
@@ -36,22 +35,22 @@ func main() {
 	var engine = route.SetupRoutes()
 	dao.DbConn.Db, err = dao.InitializeDb()
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 	err = dao.RedisConn.Init(config.Config.Redis)
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 
 	//load keys
 	config.CloudPrivateKey, err = utils.LoadPrivateKey(config.Config.PvtKeyPath)
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 
 	config.CloudPublicKey, err = utils.LoadPublicKey(config.Config.PubKeyPath)
 	if err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 	utils.InitLogging(config.Config.Log)
 
