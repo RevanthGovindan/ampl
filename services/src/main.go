@@ -33,7 +33,7 @@ func main() {
 	}
 	var route = controllers.Router{}
 	var engine = route.SetupRoutes()
-	dao.DbConn.Db, err = dao.InitializeDb()
+	dao.DbConn, err = dao.InitializeDb()
 	if err != nil {
 		panic(err)
 	}

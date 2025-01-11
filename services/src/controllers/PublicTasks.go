@@ -4,6 +4,7 @@ import (
 	"ampl/src/config"
 	"ampl/src/dao"
 	"ampl/src/models"
+	"ampl/src/service"
 	"fmt"
 	"net/http"
 
@@ -38,7 +39,8 @@ func getAllTasks(c *gin.Context) {
 	}
 	var tasks []dao.Tasks = make([]dao.Tasks, 0)
 	var total int64
-	err := dao.DbConn.GetAllTasks(&tasks, params.Page, params.Limit, &total)
+	var taskService service.TaskService = service.TaskService{Db: dao.DbConn}
+	err := taskService.GetAllTasks(&tasks, params.Page, params.Limit, &total)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return

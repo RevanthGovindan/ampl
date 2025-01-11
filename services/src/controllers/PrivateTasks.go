@@ -1,12 +1,17 @@
 package controllers
 
 import (
+	"ampl/src/config"
 	"ampl/src/dao"
 	"ampl/src/models"
+	"ampl/src/service"
+	"ampl/src/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 // @Summary		Get Task
@@ -20,11 +25,17 @@ import (
 // @Security 	http_bearer
 // @Router      /tasks/{id} [get]
 func getTaskById(c *gin.Context) {
-	id := c.Param("id")
 	var result dao.Tasks
-	err := dao.DbConn.GetTaskById(id, &result)
+	var taskService *service.TaskService = &service.TaskService{Db: dao.DbConn}
+	var intId uint64
+	intId, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, models.ErrResponse{Error: err.Error()})
+		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
+		return
+	}
+	result, err = taskService.GetTaskById(intId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, result)
@@ -48,8 +59,9 @@ func createTask(c *gin.Context) {
 		return
 	}
 	var task dao.Tasks = dao.Tasks{Title: req.Title, Description: req.Description}
-	task.Status = "pending"
-	err = dao.DbConn.SaveTask(&task)
+	task.Status = utils.STATUS_PENDING
+	var taskService service.TaskService = service.TaskService{Db: dao.DbConn}
+	err = taskService.CreateTask(&task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
@@ -81,8 +93,19 @@ func updateTaskById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
+
+	if err := config.Validate.Struct(req); err != nil {
+		var errStr string
+		for _, e := range err.(validator.ValidationErrors) {
+			errStr += fmt.Sprintf("Validation failed for %s: %s", e.Field(), e.Tag())
+		}
+		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: errStr})
+		return
+	}
+
+	var taskService service.TaskService = service.TaskService{Db: dao.DbConn}
 	var task dao.Tasks = dao.Tasks{Title: req.Title, Description: req.Description, ID: uint64(intId), Status: req.Status}
-	err = dao.DbConn.UpdateTaskById(task)
+	_, err = taskService.UpdateTaskById(task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
@@ -100,8 +123,13 @@ func updateTaskById(c *gin.Context) {
 // @Security 	http_bearer
 // @Router      /tasks/{id} [delete]
 func deleteTaskById(c *gin.Context) {
-	var id = c.Param("id")
-	err := dao.DbConn.DeleteTaskById(id)
+	intId, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
+		return
+	}
+	var taskService service.TaskService = service.TaskService{Db: dao.DbConn}
+	err = taskService.DeleteTaskById(intId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return

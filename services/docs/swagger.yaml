@@ -62,6 +62,10 @@ definitions:
       description:
         type: string
       status:
+        enum:
+        - pending
+        - in-progress
+        - completed
         type: string
       title:
         type: string
@@ -106,7 +110,7 @@ paths:
       description: Get all the tasks
       operationId: get-task
       parameters:
-      - description: Page no, if empty it will be 0
+      - description: Page no, if empty everything will sent in single shot
         in: query
         name: pageNo
         type: string

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"flag"
 	"fmt"
 	"os"
 
@@ -33,9 +32,12 @@ func parseConfigFile[S any](configPath string, config *S) error {
 }
 
 func InitializeConfigs[S any](configRef *S) error {
-	var configPath string
-	flag.StringVar(&configPath, "config", "config.yaml", "path to config file")
-	flag.Parse()
+	dir, err := FindProjectRoot()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	var configPath string = fmt.Sprintf("%s/%s", dir, "config.yaml")
 	if err := ValidateConfigPath(configPath); err != nil {
 		return err
 	}

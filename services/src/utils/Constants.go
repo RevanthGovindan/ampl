@@ -18,3 +18,9 @@ const (
 const (
 	TOKEN_TYPE = "Bearer"
 )
+
+const (
+	STATUS_INPROGRESS = "in-progress"
+	STATUS_PENDING    = "pending"
+	STATUS_COMPLETED  = "completed"
+)

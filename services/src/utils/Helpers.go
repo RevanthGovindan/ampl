@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -82,4 +83,18 @@ func JwtDecrypt(encryptedToken string, publicKey *rsa.PublicKey) (jwt.MapClaims,
 	}
 
 	return claims, nil
+}
+
+func FindProjectRoot() (string, error) {
+	wd, _ := os.Getwd()
+	for {
+		if _, err := os.Stat(filepath.Join(wd, "go.mod")); err == nil {
+			return wd, err
+		}
+		wd = filepath.Dir(wd)
+		if wd == "/" {
+			break
+		}
+	}
+	return "", nil
 }

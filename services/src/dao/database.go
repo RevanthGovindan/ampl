@@ -1,73 +1,73 @@
 package dao
 
 import (
-	"errors"
+	"ampl/src/config"
+	"fmt"
+	"strings"
+	"time"
 
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var DbConn DbPool
+var DbConn *gorm.DB
 
-type DbPool struct {
-	Db *gorm.DB
+func InitializeDb() (*gorm.DB, error) {
+	var err error
+	err = createDatabase()
+	if err != nil {
+		return nil, err
+	}
+	db, err := autoMigration()
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 
-func (f *DbPool) GetAllTasks(t *[]Tasks, page int, limit int, count *int64) (err error) {
-	var find *gorm.DB
-	if limit != 0 && page != 0 {
-		find = f.Db.Limit(limit).Offset(limit * (page - 1)).Find(t)
-	} else {
-		find = f.Db.Find(t)
-	}
-	err = find.Error
-	err = errors.Join(err, f.Db.Model(&Tasks{}).Count(count).Error)
+func createDatabase() error {
+	var taskDb = config.Config.Db
+	dsn := fmt.Sprintf("host=%s user=%s password=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
+		taskDb.Host, taskDb.User, taskDb.Password, taskDb.Port)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return err
 	}
-	return nil
-}
+	defer func() {
+		sql, _ := db.DB()
+		sql.Close()
+	}()
 
-func (f *DbPool) SaveTask(t *Tasks) (err error) {
-	txn := f.Db.Create(t)
-	if txn.Error != nil {
-		return nil
-	}
-	if txn.RowsAffected < 1 {
-		return errors.New("insertion failed")
-	}
-	return nil
-}
-
-func (f *DbPool) GetTaskById(id string, t *Tasks) (err error) {
-	var count int64
-	find := f.Db.Find(t, id).Count(&count)
-	if find.Error != nil {
+	var result int
+	err = db.Raw(fmt.Sprintf("SELECT 1 FROM pg_database WHERE datname = '%s'", strings.ToLower(taskDb.Database))).Scan(&result).Error
+	if err != nil {
 		return err
 	}
-	if count == 0 {
-		return errors.New("no data")
+	if result == 0 {
+		query := fmt.Sprintf("CREATE DATABASE %s", strings.ToLower(taskDb.Database))
+		err = db.Exec(query).Error
+		return err
 	}
 	return nil
 }
 
-func (f *DbPool) UpdateTaskById(t Tasks) (err error) {
-	find := f.Db.Model(&t).Updates(Tasks{Title: t.Title, Description: t.Description, Status: t.Status})
-	if find.Error != nil {
-		return err
+func autoMigration() (*gorm.DB, error) {
+	var taskDb = config.Config.Db
+	dsn := fmt.Sprintf("host=%s user=%s password=%s database=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
+		taskDb.Host, taskDb.User, taskDb.Password, strings.ToLower(taskDb.Database), taskDb.Port)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		return nil, err
 	}
-	if find.RowsAffected == 0 {
-		return errors.New("invalid id or no changes")
+	sqlDb, err := db.DB()
+	if err != nil {
+		return db, err
 	}
-	return nil
-}
 
-func (f *DbPool) DeleteTaskById(id string) (err error) {
-	find := f.Db.Delete(&Tasks{}, id)
-	if find.Error != nil {
-		return err
-	}
-	if find.RowsAffected == 0 {
-		return errors.New("invalid id")
-	}
-	return nil
+	sqlDb.SetMaxOpenConns(taskDb.MaxOpen)
+	sqlDb.SetMaxIdleConns(taskDb.MaxIdle)
+	sqlDb.SetConnMaxLifetime(time.Duration(1) * time.Hour)
+
+	db.AutoMigrate(&Tasks{})
+	return db, nil
 }

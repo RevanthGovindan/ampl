@@ -16,7 +16,7 @@ type CreateTask struct {
 
 type UpdateTask struct {
 	CreateTask
-	Status string `gorm:"type:status_type" json:"status"`
+	Status string `gorm:"type:status_type" json:"status" validate:"oneof=pending in-progress completed"`
 }
 
 type GetTaskParams struct {
