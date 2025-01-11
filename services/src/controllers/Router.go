@@ -11,14 +11,34 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/time/rate"
 )
 
-type Router struct{}
+type Router struct {
+	limiters map[string]*rate.Limiter
+	mu       sync.RWMutex
+}
 
-func (f *Router) RequestLogger() gin.HandlerFunc {
+func (f *Router) GetLimiter(token string, rps int, burst int) *rate.Limiter {
+	f.mu.RLock()
+	limiter, exists := f.limiters[token]
+	if exists {
+		f.mu.RUnlock()
+		return limiter
+	}
+	f.mu.RUnlock()
+	f.mu.Lock()
+	limiter = rate.NewLimiter(rate.Limit(rps), burst)
+	f.limiters[token] = limiter
+	f.mu.Unlock()
+	return limiter
+}
+
+func (f *Router) requestLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		startTime := time.Now()
 		bodyBytes, err := ioutil.ReadAll(c.Request.Body)
@@ -37,7 +57,7 @@ func (f *Router) RequestLogger() gin.HandlerFunc {
 	}
 }
 
-func (f *Router) ResponseLogger() gin.HandlerFunc {
+func (f *Router) responseLogger() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		log.Printf("%s %s %d\n",
 			c.Request.RequestURI,
@@ -48,7 +68,28 @@ func (f *Router) ResponseLogger() gin.HandlerFunc {
 	}
 }
 
-func (f *Router) Authorized() gin.HandlerFunc {
+func (f *Router) rateLimiter() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		var splits = strings.Split(authHeader, " ")
+		var token = strings.TrimSpace(splits[1])
+		if token == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Missing access token"})
+			c.Abort()
+			return
+		}
+
+		limiter := f.GetLimiter(token, 5, 5)
+		if !limiter.Allow() {
+			c.JSON(http.StatusTooManyRequests, gin.H{"error": "Rate limit exceeded. Try again later."})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
+func (f *Router) authorized() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		var splits = strings.Split(authHeader, " ")
@@ -82,9 +123,10 @@ func (f *Router) Authorized() gin.HandlerFunc {
 }
 
 func (f *Router) SetupRoutes() *gin.Engine {
+	f.limiters = make(map[string]*rate.Limiter)
 	r := gin.Default()
-	r.Use(f.RequestLogger())
-	r.Use(f.ResponseLogger())
+	r.Use(f.requestLogger())
+	r.Use(f.responseLogger())
 	if !utils.IsRelease() {
 		r.StaticFS("/docs", http.Dir("./docs"))
 	}
@@ -96,7 +138,8 @@ func (f *Router) SetupRoutes() *gin.Engine {
 
 	authorized := r.Group("/")
 	{
-		authorized.Use(f.Authorized())
+		authorized.Use(f.authorized())
+		authorized.Use(f.rateLimiter())
 		authorized.GET("/tasks/:id", getTaskById)
 		authorized.POST("/tasks", createTask)
 		authorized.PUT("/tasks/:id", updateTaskById)

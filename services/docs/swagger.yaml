@@ -21,6 +21,9 @@ definitions:
         type: string
       title:
         type: string
+    required:
+    - description
+    - title
     type: object
   models.LoginRequest:
     properties:
@@ -32,8 +35,13 @@ definitions:
       password:
         description: |-
           required: true
-          example: ampl
+          example: amplampl
+        maxLength: 20
+        minLength: 8
         type: string
+    required:
+    - name
+    - password
     type: object
   models.LoginResponse:
     properties:
@@ -57,6 +65,9 @@ definitions:
         type: string
       title:
         type: string
+    required:
+    - description
+    - title
     type: object
 host: localhost:8000
 info:
@@ -94,6 +105,15 @@ paths:
       - application/json
       description: Get all the tasks
       operationId: get-task
+      parameters:
+      - description: Page no, if empty it will be 0
+        in: query
+        name: pageNo
+        type: string
+      - description: limit of records, if empty everything will sent in single shot
+        in: query
+        name: limit
+        type: string
       produces:
       - application/json
       responses:

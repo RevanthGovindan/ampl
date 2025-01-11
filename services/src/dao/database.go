@@ -12,8 +12,16 @@ type DbPool struct {
 	Db *gorm.DB
 }
 
-func (f *DbPool) GetAllTasks(t *[]Tasks) (err error) {
-	if err = f.Db.Find(t).Error; err != nil {
+func (f *DbPool) GetAllTasks(t *[]Tasks, page int, limit int, count *int64) (err error) {
+	var find *gorm.DB
+	if limit != 0 && page != 0 {
+		find = f.Db.Limit(limit).Offset(limit * (page - 1)).Find(t)
+	} else {
+		find = f.Db.Find(t)
+	}
+	err = find.Error
+	err = errors.Join(err, f.Db.Model(&Tasks{}).Count(count).Error)
+	if err != nil {
 		return err
 	}
 	return nil

@@ -18,3 +18,8 @@ type UpdateTask struct {
 	CreateTask
 	Status string `gorm:"type:status_type" json:"status"`
 }
+
+type GetTaskParams struct {
+	Limit int `form:"limit" validate:"gte=1"`
+	Page  int `form:"pageNo" validate:"gte=1"`
+}

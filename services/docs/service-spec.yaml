@@ -30,6 +30,17 @@ paths:
     get:
       description: Get all the tasks
       operationId: get-task
+      parameters:
+        - description: Page no, if empty it will be 0
+          in: query
+          name: pageNo
+          schema:
+            type: string
+        - description: limit of records, if empty everything will sent in single shot
+          in: query
+          name: limit
+          schema:
+            type: string
       responses:
         "200":
           description: OK
@@ -174,6 +185,9 @@ components:
           type: string
         title:
           type: string
+      required:
+        - description
+        - title
       type: object
     models.LoginRequest:
       properties:
@@ -185,8 +199,13 @@ components:
         password:
           description: |-
             required: true
-            example: ampl
+            example: amplampl
+          maxLength: 20
+          minLength: 8
           type: string
+      required:
+        - name
+        - password
       type: object
     models.LoginResponse:
       properties:
@@ -210,4 +229,7 @@ components:
           type: string
         title:
           type: string
+      required:
+        - description
+        - title
       type: object
