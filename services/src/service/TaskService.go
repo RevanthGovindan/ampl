@@ -2,6 +2,7 @@ package service
 
 import (
 	"ampl/src/dao"
+	"ampl/src/utils"
 	"errors"
 
 	"gorm.io/gorm"
@@ -45,7 +46,7 @@ func (f *TaskService) GetTaskById(id uint64) (dao.Tasks, error) {
 		return task, find.Error
 	}
 	if count == 0 {
-		return task, errors.New("no data")
+		return task, utils.NotFoundErr
 	}
 	return task, nil
 }

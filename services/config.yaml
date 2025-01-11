@@ -7,8 +7,8 @@ credentials:
   username: ampl
   password: amplampl
 
-private-key-path: keys/private.pem
-public-key-path: keys/public.pem
+private-key-path: /mnt/d/learning/ampl/services/keys/private.pem
+public-key-path: /mnt/d/learning/ampl/services/keys/public.pem
 
 log:
   dir: logs

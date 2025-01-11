@@ -6,6 +6,7 @@ import (
 	"ampl/src/models"
 	"ampl/src/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -29,6 +30,7 @@ func login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
+
 	if strings.EqualFold(config.Config.Credentials.UserName, req.Name) &&
 		strings.EqualFold(config.Config.Credentials.Password, req.Password) {
 		var currTime = time.Now()
@@ -42,5 +44,7 @@ func login(c *gin.Context) {
 		c.JSON(http.StatusOK, response)
 		return
 	}
+	fmt.Println("req")
+	fmt.Println(req)
 	c.JSON(http.StatusUnauthorized, models.ErrResponse{Error: "Invalid credentials"})
 }

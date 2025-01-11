@@ -6,6 +6,7 @@ import (
 	"ampl/src/models"
 	"ampl/src/service"
 	"ampl/src/utils"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -35,7 +36,11 @@ func getTaskById(c *gin.Context) {
 	}
 	result, err = taskService.GetTaskById(intId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
+		if errors.Is(utils.NotFoundErr, err) {
+			c.JSON(http.StatusNotFound, models.ErrResponse{Error: err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, models.ErrResponse{Error: err.Error()})
+		}
 		return
 	}
 	c.JSON(http.StatusOK, result)
@@ -66,7 +71,7 @@ func createTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, models.MsgResponse{Msg: "Created"})
+	c.JSON(http.StatusCreated, task)
 }
 
 // @Summary		Update Task
@@ -110,6 +115,7 @@ func updateTaskById(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
 		return
 	}
+	c.JSON(http.StatusOK, task)
 }
 
 // @Summary		Delete task
@@ -117,7 +123,7 @@ func updateTaskById(c *gin.Context) {
 // @Tags        Tasks
 // @Id 			delete-task
 // @Accept      json
-// @Success		200  {object} models.MsgResponse
+// @Success		204  {object} models.MsgResponse
 // @Produce     json
 // @Param       id path string true "Id of the task"
 // @Security 	http_bearer
@@ -131,8 +137,8 @@ func deleteTaskById(c *gin.Context) {
 	var taskService service.TaskService = service.TaskService{Db: dao.DbConn}
 	err = taskService.DeleteTaskById(intId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, models.ErrResponse{Error: err.Error()})
+		c.JSON(http.StatusInternalServerError, models.ErrResponse{Error: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, models.MsgResponse{Msg: "Deleted"})
+	c.JSON(http.StatusNoContent, models.MsgResponse{Msg: "Deleted"})
 }

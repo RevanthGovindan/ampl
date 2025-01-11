@@ -122,9 +122,8 @@ func (f *Router) authorized() gin.HandlerFunc {
 	}
 }
 
-func (f *Router) SetupRoutes() *gin.Engine {
+func (f *Router) RegisterRoutes(r *gin.Engine) {
 	f.limiters = make(map[string]*rate.Limiter)
-	r := gin.Default()
 	r.Use(f.requestLogger())
 	r.Use(f.responseLogger())
 	if !utils.IsRelease() {
@@ -145,6 +144,10 @@ func (f *Router) SetupRoutes() *gin.Engine {
 		authorized.PUT("/tasks/:id", updateTaskById)
 		authorized.DELETE("/tasks/:id", deleteTaskById)
 	}
+}
 
+func (f *Router) SetupRoutes() *gin.Engine {
+	r := gin.Default()
+	f.RegisterRoutes(r)
 	return r
 }

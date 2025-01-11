@@ -1,5 +1,7 @@
 package utils
 
+import "errors"
+
 //env
 const (
 	LOCAL = "local"
@@ -23,4 +25,8 @@ const (
 	STATUS_INPROGRESS = "in-progress"
 	STATUS_PENDING    = "pending"
 	STATUS_COMPLETED  = "completed"
+)
+
+var (
+	NotFoundErr = errors.New("not found")
 )
