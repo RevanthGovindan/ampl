@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	Config          models.Config = models.Config{}
-	CloudPrivateKey *rsa.PrivateKey
-	CloudPublicKey  *rsa.PublicKey
-	Validate        = validator.New()
+	Config           models.Config = models.Config{}
+	JwtRsaPrivateKey *rsa.PrivateKey
+	JwtRsaPublicKey  *rsa.PublicKey
+	Validate         = validator.New()
 )

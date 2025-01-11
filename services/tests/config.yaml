@@ -7,8 +7,8 @@ credentials:
   username: ampl
   password: amplampl
 
-private-key-path: keys/private.pem
-public-key-path: keys/public.pem
+private-key-path: ../keys/private.pem
+public-key-path: ../keys/public.pem
 
 log:
   dir: logs
@@ -16,18 +16,18 @@ log:
   level: INFO
 
 db:
-  host: postgres
+  host: localhost
   port: 5432
   user: root
   password: root
-  database: tasks
+  database: TASKS
   maxIdle: 5
   maxOpen: 10
   driver: postgres
   endPoint: NXTOPTION-DB
 
 redis:
-  host: redis-container
+  host: localhost
   port: 6379
   password:
   database: 0

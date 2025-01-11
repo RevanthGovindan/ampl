@@ -26,10 +26,10 @@ func setupConfigs(t *testing.T) *gin.Engine {
 	dao.DbConn, err = dao.InitializeDb()
 	assert.NoError(t, err)
 
-	config.CloudPrivateKey, err = utils.LoadPrivateKey(config.Config.PvtKeyPath)
+	config.JwtRsaPrivateKey, err = utils.LoadPrivateKey(config.Config.PvtKeyPath)
 	assert.NoError(t, err)
 
-	config.CloudPublicKey, err = utils.LoadPublicKey(config.Config.PubKeyPath)
+	config.JwtRsaPublicKey, err = utils.LoadPublicKey(config.Config.PubKeyPath)
 	assert.NoError(t, err)
 
 	utils.InitLogging(config.Config.Log)

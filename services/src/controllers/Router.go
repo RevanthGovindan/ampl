@@ -105,7 +105,7 @@ func (f *Router) authorized() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		claims, err := utils.JwtDecrypt(token, config.CloudPublicKey)
+		claims, err := utils.JwtDecrypt(token, config.JwtRsaPublicKey)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, models.ErrResponse{Error: "unauthorized"})
 			c.Abort()

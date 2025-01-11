@@ -32,12 +32,7 @@ func parseConfigFile[S any](configPath string, config *S) error {
 }
 
 func InitializeConfigs[S any](configRef *S) error {
-	dir, err := FindProjectRoot()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return err
-	}
-	var configPath string = fmt.Sprintf("%s/%s", dir, "config.yaml")
+	var configPath string = "config.yaml"
 	if err := ValidateConfigPath(configPath); err != nil {
 		return err
 	}

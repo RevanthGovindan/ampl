@@ -12,6 +12,11 @@ import (
 
 var DbConn *gorm.DB
 
+func CloseDbConn() {
+	sql, _ := DbConn.DB()
+	sql.Close()
+}
+
 func InitializeDb() (*gorm.DB, error) {
 	var err error
 	err = createDatabase()
@@ -51,6 +56,21 @@ func createDatabase() error {
 	return nil
 }
 
+func createEnum(db *gorm.DB) error {
+	err := db.Exec(`
+	DO $$ 
+	BEGIN
+		IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'status_type') THEN
+			CREATE TYPE status_type AS ENUM ('pending', 'in-progress', 'completed');
+		END IF;
+	END $$;
+	`).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func autoMigration() (*gorm.DB, error) {
 	var taskDb = config.Config.Db
 	dsn := fmt.Sprintf("host=%s user=%s password=%s database=%s port=%d sslmode=disable TimeZone=Asia/Kolkata",
@@ -67,6 +87,8 @@ func autoMigration() (*gorm.DB, error) {
 	sqlDb.SetMaxOpenConns(taskDb.MaxOpen)
 	sqlDb.SetMaxIdleConns(taskDb.MaxIdle)
 	sqlDb.SetConnMaxLifetime(time.Duration(1) * time.Hour)
+
+	createEnum(db)
 
 	db.AutoMigrate(&Tasks{})
 	return db, nil

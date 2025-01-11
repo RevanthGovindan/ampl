@@ -35,7 +35,7 @@ func login(c *gin.Context) {
 		strings.EqualFold(config.Config.Credentials.Password, req.Password) {
 		var currTime = time.Now()
 		var exp = time.Duration(1) * time.Hour
-		token, _ := utils.JwtEncode(req.Name, currTime.Add(exp).UnixMilli(), config.CloudPrivateKey)
+		token, _ := utils.JwtEncode(req.Name, currTime.Add(exp).UnixMilli(), config.JwtRsaPrivateKey)
 		var response models.LoginResponse = models.LoginResponse{
 			Name: req.Name, Type: utils.TOKEN_TYPE, Token: token,
 		}

@@ -15,6 +15,10 @@ type RedisPool struct {
 	redisClient *redis.Client
 }
 
+func (f *RedisPool) Close() {
+	f.redisClient.Close()
+}
+
 func (f *RedisPool) Init(redisConfig models.RedisConfig) error {
 	f.redisClient = redis.NewClient(&redis.Options{
 		Addr:         fmt.Sprintf("%s:%s", redisConfig.Host, redisConfig.Port),
